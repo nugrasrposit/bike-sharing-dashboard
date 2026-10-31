@@ -59,10 +59,3 @@ Browser akan menampilkan alamat lokal yang diberikan Streamlit, biasanya `http:/
 ## Catatan kualitas data
 
 Tidak ditemukan nilai kosong, duplikasi, angka negatif, atau perbedaan antara `cnt` dengan `casual + registered`. Nilai total harian dari `day.csv` sesuai dengan penjumlahan per jam dari `hour.csv`. Sebanyak **76 hari** memiliki kurang dari 24 baris jam; jam yang tidak tercatat tidak diisi otomatis dengan nol. Rata-rata berdasarkan `hour.csv` dibaca sebagai rata-rata per jam **yang tercatat**. Hasil hanya menggambarkan pola historis pada 2011–2012 dan tidak menyimpulkan sebab-akibat.
-
-## Sebelum submission
-
-- Isi nama, email, dan ID Dicoding pada bagian awal notebook.
-- Pastikan notebook tetap tersimpan dengan seluruh output setelah pembaruan.
-- Lakukan deployment dashboard ke Streamlit Cloud, lalu isi `url.txt` dengan tautan sebenarnya.
-- Kirim satu file ZIP yang berisi seluruh folder proyek, termasuk kedua dataset asli.
