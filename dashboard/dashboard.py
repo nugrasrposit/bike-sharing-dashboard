@@ -1,20 +1,4 @@
-"""Dashboard Bike Sharing - analisis deskriptif day.csv dan hour.csv.
-
-Cara menjalankan dari folder utama proyek:
-    python -m streamlit run dashboard/dashboard.py
-
-Struktur folder yang dianjurkan:
-    proyek/
-    ├── dashboard/
-    │   └── dashboard.py
-    ├── data/
-    │   ├── day.csv
-    │   └── hour.csv
-    └── requirements.txt
-"""
-
 from pathlib import Path
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
@@ -64,7 +48,8 @@ def format_angka(nilai):
 
 # 1. Judul dan pembacaan data
 st.title("🚲 Dashboard Penyewaan Sepeda")
-st.write("Ringkasan pola penyewaan sepeda pada 2011–2012 berdasarkan data harian dan per jam.")
+st.write("Analisis penggunaan sepeda berdasarkan catatan harian dan per jam, 1 Januari 2011–31 Desember 2012.")
+st.caption("Data digunakan untuk membandingkan pola waktu penyewaan, bukan untuk menghitung pelanggan unik.")
 
 folder_data = cari_folder_data()
 if folder_data is None:
@@ -87,7 +72,7 @@ if not kolom_day.issubset(day.columns) or not kolom_hour.issubset(hour.columns):
 
 # 2. Filter tahun
 st.sidebar.header("Filter")
-tahun_dipilih = st.sidebar.selectbox("Pilih tahun", ["Semua tahun", "2011", "2012"])
+tahun_dipilih = st.sidebar.selectbox("Pilih tahun pengamatan", ["Semua tahun", "2011", "2012"])
 if tahun_dipilih != "Semua tahun":
     tahun = int(tahun_dipilih)
     day = day.loc[day["dteday"].dt.year == tahun].copy()
@@ -110,11 +95,13 @@ st.caption("Jumlah penyewaan tidak sama dengan jumlah pelanggan unik.")
 
 # 4. Analisis yang menjawab pertanyaan bisnis
 tab_tren, tab_jam, tab_binning, tab_data = st.tabs(
-    ["Tren dan musim", "Pola per jam", "Analisis kelompok jam", "Lihat data"]
+    ["Pertanyaan 1: bulan & musim", "Pertanyaan 2: jam sibuk", "Binning (lanjutan)", "Data"]
 )
 
 with tab_tren:
-    st.subheader("Bagaimana perubahan penyewaan dari bulan ke bulan?")
+    st.markdown("**Pertanyaan bisnis 1**")
+    st.subheader("Bagaimana perubahan rata-rata penyewaan sepeda harian menurut bulan dan musim selama periode 1 Januari 2011 hingga 31 Desember 2012?")
+    st.caption("Grafik bulanan dan musiman di bawah menjawab pertanyaan bisnis pertama.")
     day_bulanan = day.copy()
     day_bulanan["bulan"] = day_bulanan["dteday"].dt.to_period("M").astype(str)
     rata_bulanan = day_bulanan.groupby("bulan")["cnt"].mean()
@@ -133,7 +120,7 @@ with tab_tren:
         f"yaitu sekitar **{format_angka(rata_bulanan.max())} penyewaan per hari**."
     )
 
-    st.subheader("Bagaimana pola penyewaan berdasarkan musim?")
+    st.subheader("Perbandingan rata-rata penyewaan menurut musim")
     nama_musim = {1: "Semi", 2: "Panas", 3: "Gugur", 4: "Dingin"}
     day_musim = day.copy()
     day_musim["musim"] = day_musim["season"].map(nama_musim)
@@ -153,7 +140,9 @@ with tab_tren:
     st.caption("Grafik membandingkan rata-rata harian, bukan total per musim.")
 
 with tab_jam:
-    st.subheader("Kapan jam penyewaan paling ramai?")
+    st.markdown("**Pertanyaan bisnis 2**")
+    st.subheader("Pada jam berapa rata-rata penyewaan sepeda tertinggi terjadi pada hari kerja dan bukan hari kerja selama periode 1 Januari 2011 hingga 31 Desember 2012?")
+    st.caption("Garis pada grafik menunjukkan rata-rata penyewaan pada masing-masing jam yang tercatat.")
     jam_df = hour.copy()
     jam_df["jenis_hari"] = jam_df["workingday"].map(
         {1: "Hari kerja", 0: "Bukan hari kerja"}
@@ -227,7 +216,7 @@ with tab_binning:
     )
 
 with tab_data:
-    st.subheader("Contoh isi dataset")
+    st.subheader("Dataset")
     st.write("**Data harian**")
     st.dataframe(day.head(10), use_container_width=True)
     st.write("**Data per jam**")
